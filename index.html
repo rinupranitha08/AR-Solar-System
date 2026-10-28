@@ -4,15 +4,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AR Interactive Solar System</title>
+  <meta name="theme-color" content="#0a1228">
+  <title>AR Solar System Learning Lab</title>
 
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
+      background: #050b18;
     }
 
     #panel {
@@ -21,57 +27,209 @@
       left: 10px;
       right: 10px;
       z-index: 10;
-      padding: 12px;
-      border-radius: 12px;
-      background: rgba(10, 18, 40, 0.92);
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(10, 18, 40, 0.95);
       color: white;
-      max-height: 45vh;
+      max-height: 48vh;
       overflow-y: auto;
+      border: 1px solid #334766;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #heading {
+      margin: 0 0 5px;
+      font-size: 20px;
+    }
+
+    #subtitle {
+      color: #b8c9e8;
+      font-size: 12px;
+      margin: 0 0 12px;
     }
 
     #buttons {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 10px;
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+
+    button, select {
+      font: inherit;
     }
 
     #buttons button {
-      padding: 8px 10px;
-      border: 1px solid #789;
-      border-radius: 18px;
+      padding: 9px 12px;
+      min-height: 40px;
+      border: 1px solid #607696;
+      border-radius: 20px;
       background: #243451;
       color: white;
       cursor: pointer;
+      touch-action: manipulation;
     }
 
     #buttons button.active {
       background: #f5b942;
       color: #111;
       border-color: #f5b942;
+      font-weight: bold;
     }
 
     #planetName {
-      margin: 6px 0;
-      font-size: 20px;
+      margin: 8px 0;
+      font-size: 23px;
     }
 
     #planetInfo {
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.55;
     }
 
     #status {
-      margin-top: 7px;
+      margin-top: 10px;
       font-size: 12px;
       color: #aee7ff;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 7px;
+      margin: 12px 0;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px 5px;
+      border-radius: 9px;
+      border: 1px solid #516582;
+      background: #172642;
+      color: white;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: #d9e9ff;
+      color: #10203a;
+      border-color: #d9e9ff;
+      font-weight: bold;
+    }
+
+    .lesson {
+      background: #13213b;
+      border: 1px solid #304564;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 8px;
+    }
+
+    .lesson h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      color: #f5c86b;
+    }
+
+    .lesson p {
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 5px 0;
+    }
+
+    .facts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .fact-card {
+      background: #1c2d4b;
+      border-radius: 9px;
+      padding: 10px;
+      min-width: 0;
+    }
+
+    .fact-label {
+      color: #b9cbe8;
+      font-size: 11px;
+      margin-bottom: 5px;
+    }
+
+    .fact-value {
+      font-size: 14px;
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+
+    .quiz-option {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 11px;
+      margin: 7px 0;
+      border: 1px solid #617798;
+      border-radius: 9px;
+      background: #243451;
+      color: white;
+      cursor: pointer;
+    }
+
+    .quiz-option:disabled {
+      cursor: default;
+      opacity: 0.9;
+    }
+
+    #quizFeedback {
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 10px;
+    }
+
+    .action-button {
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 9px;
+      background: #f5b942;
+      color: #111;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    #quizScore {
+      color: #b8c9e8;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 380px) {
+      #panel {
+        padding: 10px;
+        top: 6px;
+        left: 6px;
+        right: 6px;
+      }
+
+      #buttons button {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+
+      .tab {
+        font-size: 11px;
+      }
     }
   </style>
 </head>
 
 <body>
-
   <div id="panel">
+    <h2 id="heading">Solar System Learning Lab</h2>
+    <p id="subtitle">
+      Scan your poster, explore a planet, and test your knowledge.
+    </p>
+
     <div id="buttons">
       <button data-planet="Mercury">Mercury</button>
       <button data-planet="Venus">Venus</button>
@@ -84,13 +242,77 @@
     </div>
 
     <h2 id="planetName">Earth</h2>
-
     <div id="planetInfo">
-      Distance from Sun: About 150 million km<br>
-      Our home planet, with liquid water on its surface.
+      Our home planet has liquid water on its surface and supports life.
     </div>
 
-    <div id="status">Loading planet textures...</div>
+    <div class="tabs">
+      <button class="tab active" data-tab="facts">Planet facts</button>
+      <button class="tab" data-tab="compare">Compare</button>
+      <button class="tab" data-tab="quiz">Quick quiz</button>
+    </div>
+
+    <div id="factsView">
+      <div class="facts-grid">
+        <div class="fact-card">
+          <div class="fact-label">Distance from Sun</div>
+          <div class="fact-value" id="distanceFact">149.6 million km</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-label">Diameter</div>
+          <div class="fact-value" id="diameterFact">12,742 km</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-label">Gravity</div>
+          <div class="fact-value" id="gravityFact">9.81 m/s²</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-label">Length of day</div>
+          <div class="fact-value" id="dayFact">24 hours</div>
+        </div>
+      </div>
+
+      <div class="lesson">
+        <h3>Did you know?</h3>
+        <p id="funFact"></p>
+      </div>
+
+      <div class="lesson">
+        <h3>Remember this</h3>
+        <p id="learningTip"></p>
+      </div>
+    </div>
+
+    <div id="compareView" hidden>
+      <div class="lesson">
+        <h3 id="compareTitle">Earth compared with Earth</h3>
+        <p id="compareDiameter"></p>
+        <p id="compareGravity"></p>
+        <p id="compareDistance"></p>
+        <p id="compareExplanation"></p>
+      </div>
+      <p style="font-size:12px;color:#b8c9e8">
+        Comparisons use approximate planetary values. The 3D model sizes
+        are chosen for viewing, not to scale.
+      </p>
+    </div>
+
+    <div id="quizView" hidden>
+      <div class="lesson">
+        <h3>Check your knowledge</h3>
+        <p id="quizQuestion"></p>
+        <div id="quizOptions"></div>
+        <div id="quizFeedback" aria-live="polite"></div>
+        <button id="nextQuiz" class="action-button" hidden>
+          Try another question
+        </button>
+        <div id="quizScore">Questions answered: 0</div>
+      </div>
+    </div>
+
+    <div id="status" aria-live="polite">
+      Loading planet textures...
+    </div>
   </div>
 
   <a-scene
@@ -111,25 +333,15 @@
       <img id="neptuneTexture" src="./textures/neptune.jpg">
     </a-assets>
 
-    <!-- Camera -->
-    <a-camera
-      position="0 0 0"
-      look-controls="enabled: false">
-    </a-camera>
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- Improved lighting -->
-    <a-entity
-      light="type: ambient; color: #FFFFFF; intensity: 0.8">
-    </a-entity>
-
+    <a-entity light="type: ambient; color: #FFFFFF; intensity: 0.8"></a-entity>
     <a-entity
       light="type: directional; color: #FFFFFF; intensity: 1.2"
       position="-1 2 3">
     </a-entity>
 
-    <!-- AR planet -->
     <a-entity mindar-image-target="targetIndex: 0">
-
       <a-sphere
         id="planetSphere"
         position="0 0 0"
@@ -137,7 +349,6 @@
         material="src: #earthTexture; shader: standard; roughness: 1; metalness: 0">
       </a-sphere>
 
-      <!-- Saturn's ring is hidden unless Saturn is selected -->
       <a-ring
         id="saturnRing"
         position="0 0 0"
@@ -153,7 +364,6 @@
         position="0 -0.48 0"
         text="value: Earth; align: center; color: #FFFFFF; width: 2.5; shader: msdf">
       </a-entity>
-
     </a-entity>
   </a-scene>
 
@@ -162,57 +372,146 @@
       Mercury: {
         texture: "#mercuryTexture",
         radius: 0.20,
-        distance: "About 57.9 million km",
-        fact: "The smallest planet and the closest to the Sun."
+        distance: "57.9 million km",
+        diameter: 4879,
+        gravity: 3.7,
+        day: "58.6 Earth days",
+        fact: "Mercury is the smallest planet and the closest planet to the Sun. It has extreme temperature changes.",
+        tip: "Mercury is the first planet from the Sun.",
+        question: "Which planet is closest to the Sun?",
+        options: ["Venus", "Mercury", "Mars", "Earth"],
+        answer: 1,
+        explanation: "Mercury is the innermost planet in the Solar System."
       },
 
       Venus: {
         texture: "#venusTexture",
         radius: 0.30,
-        distance: "About 108.2 million km",
-        fact: "Venus is the hottest planet in the Solar System."
+        distance: "108.2 million km",
+        diameter: 12104,
+        gravity: 8.87,
+        day: "243 Earth days",
+        fact: "Venus is the hottest planet because its thick atmosphere traps heat through an intense greenhouse effect.",
+        tip: "Venus is the second planet from the Sun and rotates very slowly.",
+        question: "Which planet is the hottest in our Solar System?",
+        options: ["Mercury", "Mars", "Venus", "Jupiter"],
+        answer: 2,
+        explanation: "Venus is the hottest planet due to its dense, heat-trapping atmosphere."
       },
 
       Earth: {
         texture: "#earthTexture",
         radius: 0.35,
-        distance: "About 150 million km",
-        fact: "Our home planet, with liquid water on its surface."
+        distance: "149.6 million km",
+        diameter: 12742,
+        gravity: 9.81,
+        day: "About 24 hours",
+        fact: "Earth is the only planet currently known to support life. Most of its surface is covered by water.",
+        tip: "Earth is the third planet from the Sun and has one natural moon.",
+        question: "What makes Earth especially suitable for life as we know it?",
+        options: [
+          "Its liquid water and suitable conditions",
+          "Its rings made of ice",
+          "Its position beyond Neptune",
+          "Its lack of an atmosphere"
+        ],
+        answer: 0,
+        explanation: "Earth has liquid water, a protective atmosphere, and conditions that support life."
       },
 
       Mars: {
         texture: "#marsTexture",
         radius: 0.27,
-        distance: "About 227.9 million km",
-        fact: "Mars is known as the Red Planet."
+        distance: "227.9 million km",
+        diameter: 6779,
+        gravity: 3.71,
+        day: "About 24.6 hours",
+        fact: "Mars appears red because iron-rich minerals in its surface dust have oxidized, forming rust-like material.",
+        tip: "Mars is the fourth planet from the Sun and has two small moons.",
+        question: "Why does Mars look red?",
+        options: [
+          "Its oceans are red",
+          "It is made entirely of copper",
+          "Its clouds glow red",
+          "Iron-rich minerals have oxidized"
+        ],
+        answer: 3,
+        explanation: "Oxidized iron-rich minerals in Martian dust give the planet its familiar reddish appearance."
       },
 
       Jupiter: {
         texture: "#jupiterTexture",
         radius: 0.55,
-        distance: "About 778.6 million km",
-        fact: "The largest planet, famous for its Great Red Spot."
+        distance: "778.6 million km",
+        diameter: 139820,
+        gravity: 24.79,
+        day: "About 9.9 hours",
+        fact: "Jupiter is the largest planet. Its Great Red Spot is a giant storm that has been observed for centuries.",
+        tip: "Jupiter is a gas giant and has many moons.",
+        question: "Which planet is the largest in the Solar System?",
+        options: ["Saturn", "Earth", "Jupiter", "Neptune"],
+        answer: 2,
+        explanation: "Jupiter has the greatest diameter and mass of all eight planets."
       },
 
       Saturn: {
         texture: "#saturnTexture",
         radius: 0.48,
-        distance: "About 1.43 billion km",
-        fact: "Saturn is famous for its extensive ring system."
+        distance: "1.43 billion km",
+        diameter: 116460,
+        gravity: 10.44,
+        day: "About 10.7 hours",
+        fact: "Saturn's spectacular rings consist mainly of countless pieces of ice, with rocky material and dust.",
+        tip: "Saturn is a gas giant and is the sixth planet from the Sun.",
+        question: "What are Saturn's rings made mostly of?",
+        options: [
+          "Liquid water",
+          "Ice, rocky material, and dust",
+          "Solid gold",
+          "Gas clouds only"
+        ],
+        answer: 1,
+        explanation: "Saturn's rings contain countless particles, mostly water ice, along with rocky material and dust."
       },
 
       Uranus: {
         texture: "#uranusTexture",
         radius: 0.39,
-        distance: "About 2.87 billion km",
-        fact: "An ice giant that rotates on a strongly tilted axis."
+        distance: "2.87 billion km",
+        diameter: 50724,
+        gravity: 8.69,
+        day: "About 17.2 hours",
+        fact: "Uranus rotates on its side relative to its orbit, giving it unusually extreme seasons.",
+        tip: "Uranus is an ice giant and is the seventh planet from the Sun.",
+        question: "What is unusual about Uranus's rotation?",
+        options: [
+          "It does not rotate",
+          "It rotates faster than light",
+          "It rotates on a strongly tilted axis",
+          "It rotates around Earth"
+        ],
+        answer: 2,
+        explanation: "Uranus has an axial tilt of about 98 degrees, so it effectively rotates on its side."
       },
 
       Neptune: {
         texture: "#neptuneTexture",
         radius: 0.38,
-        distance: "About 4.50 billion km",
-        fact: "A distant, cold planet with powerful winds."
+        distance: "4.50 billion km",
+        diameter: 49244,
+        gravity: 11.15,
+        day: "About 16.1 hours",
+        fact: "Neptune is the most distant planet from the Sun and experiences extremely fast winds.",
+        tip: "Neptune is an ice giant and takes about 165 Earth years to orbit the Sun.",
+        question: "Approximately how long does Neptune take to orbit the Sun?",
+        options: [
+          "One Earth year",
+          "12 Earth years",
+          "30 Earth years",
+          "165 Earth years"
+        ],
+        answer: 3,
+        explanation: "Neptune takes approximately 165 Earth years to complete one orbit around the Sun."
       }
     };
 
@@ -226,18 +525,144 @@
     const scene = document.querySelector("a-scene");
 
     let selectedPlanet = "Earth";
+    let questionsAnswered = 0;
+    let quizLocked = false;
 
-    function textureIsReady(textureSelector) {
-      const image = document.querySelector(textureSelector);
-
-      return image &&
-        image.complete &&
-        image.naturalWidth > 0;
+    function textureIsReady(selector) {
+      const image = document.querySelector(selector);
+      return image && image.complete && image.naturalWidth > 0;
     }
+
+    function formatNumber(value) {
+      return value.toLocaleString("en-US");
+    }
+
+    function showTab(tabName) {
+      document.querySelector("#factsView").hidden = tabName !== "facts";
+      document.querySelector("#compareView").hidden = tabName !== "compare";
+      document.querySelector("#quizView").hidden = tabName !== "quiz";
+
+      document.querySelectorAll(".tab").forEach(function(tab) {
+        tab.classList.toggle("active", tab.dataset.tab === tabName);
+      });
+
+      if (tabName === "quiz") {
+        showQuestion();
+      }
+    }
+
+    document.querySelectorAll(".tab").forEach(function(tab) {
+      tab.addEventListener("click", function() {
+        showTab(tab.dataset.tab);
+      });
+    });
+
+    function updateFacts(planetName) {
+      const planet = planets[planetName];
+
+      document.querySelector("#distanceFact").textContent = planet.distance;
+      document.querySelector("#diameterFact").textContent =
+        formatNumber(planet.diameter) + " km";
+      document.querySelector("#gravityFact").textContent =
+        planet.gravity + " m/s²";
+      document.querySelector("#dayFact").textContent = planet.day;
+      document.querySelector("#funFact").textContent = planet.fact;
+      document.querySelector("#learningTip").textContent = planet.tip;
+    }
+
+    function updateComparison(planetName) {
+      const planet = planets[planetName];
+      const earth = planets.Earth;
+
+      document.querySelector("#compareTitle").textContent =
+        planetName + " compared with Earth";
+
+      const diameterRatio = planet.diameter / earth.diameter;
+      const gravityRatio = planet.gravity / earth.gravity;
+
+      let diameterText;
+
+      if (planetName === "Earth") {
+        diameterText = "Earth is our reference planet.";
+      } else if (diameterRatio > 1) {
+        diameterText = "Diameter: about " + diameterRatio.toFixed(2) +
+          " times Earth's diameter.";
+      } else {
+        diameterText = "Diameter: about " +
+          (1 / diameterRatio).toFixed(2) +
+          " times smaller than Earth's diameter.";
+      }
+
+      document.querySelector("#compareDiameter").textContent = diameterText;
+
+      document.querySelector("#compareGravity").textContent =
+        "Surface gravity: about " + (gravityRatio * 100).toFixed(0) +
+        "% of Earth's gravity.";
+
+      document.querySelector("#compareDistance").textContent =
+        "Distance from Sun: " + planet.distance + ".";
+
+      document.querySelector("#compareExplanation").textContent =
+        planetName === "Earth"
+          ? "Earth provides a useful reference for comparing other planets."
+          : planetName + " differs from Earth in size, gravity, atmosphere, and its distance from the Sun.";
+    }
+
+    function showQuestion() {
+      const planet = planets[selectedPlanet];
+
+      quizLocked = false;
+
+      document.querySelector("#quizQuestion").textContent = planet.question;
+      document.querySelector("#quizFeedback").textContent = "";
+      document.querySelector("#nextQuiz").hidden = true;
+
+      const optionsBox = document.querySelector("#quizOptions");
+      optionsBox.innerHTML = "";
+
+      planet.options.forEach(function(option, index) {
+        const button = document.createElement("button");
+        button.className = "quiz-option";
+        button.textContent = option;
+
+        button.addEventListener("click", function() {
+          checkAnswer(index);
+        });
+
+        optionsBox.appendChild(button);
+      });
+
+      document.querySelector("#quizScore").textContent =
+        "Questions answered: " + questionsAnswered;
+    }
+
+    function checkAnswer(index) {
+      if (quizLocked) return;
+
+      quizLocked = true;
+      questionsAnswered++;
+
+      const planet = planets[selectedPlanet];
+      const correct = index === planet.answer;
+      const feedback = document.querySelector("#quizFeedback");
+      const optionButtons = document.querySelectorAll(".quiz-option");
+
+      optionButtons.forEach(function(button) {
+        button.disabled = true;
+      });
+
+      feedback.textContent =
+        (correct ? "Correct! " : "Not quite. ") + planet.explanation;
+
+      document.querySelector("#nextQuiz").hidden = false;
+      document.querySelector("#quizScore").textContent =
+        "Questions answered: " + questionsAnswered;
+    }
+
+    document.querySelector("#nextQuiz").addEventListener("click", showQuestion);
 
     function updatePlanet(planetName) {
       const planet = planets[planetName];
-
       if (!planet) return;
 
       selectedPlanet = planetName;
@@ -250,22 +675,15 @@
       });
 
       nameBox.textContent = planetName;
-
-      infoBox.innerHTML =
-        "Distance from Sun: " + planet.distance +
-        "<br>" + planet.fact;
-
+      infoBox.textContent = planet.fact;
       label.setAttribute("text", "value", planetName);
-
       sphere.setAttribute("radius", planet.radius);
-
-      // Show Saturn's rings only when Saturn is selected.
       ring.setAttribute("visible", planetName === "Saturn");
 
-      if (textureIsReady(planet.texture)) {
+      updateFacts(planetName);
+      updateComparison(planetName);
 
-        // Rebuild the material to prevent the previous
-        // planet's texture from remaining on the sphere.
+      if (textureIsReady(planet.texture)) {
         sphere.removeAttribute("material");
 
         sphere.setAttribute("material", {
@@ -275,11 +693,14 @@
           metalness: 0
         });
 
-        statusBox.textContent = planetName + " texture selected.";
-
+        statusBox.textContent = planetName + " selected. Explore and learn!";
       } else {
         statusBox.textContent =
           "Waiting for " + planetName + " image to load...";
+      }
+
+      if (!document.querySelector("#quizView").hidden) {
+        showQuestion();
       }
     }
 
@@ -293,8 +714,7 @@
       let loadedCount = 0;
 
       Object.keys(planets).forEach(function(planetName) {
-        const selector = planets[planetName].texture;
-        const image = document.querySelector(selector);
+        const image = document.querySelector(planets[planetName].texture);
 
         if (image.complete && image.naturalWidth > 0) {
           loadedCount++;
@@ -302,18 +722,18 @@
           image.addEventListener("load", function() {
             loadedCount++;
 
-            statusBox.textContent =
-              loadedCount + " of 8 planet textures loaded.";
-
             if (selectedPlanet === planetName) {
               updatePlanet(planetName);
             }
+
+            statusBox.textContent =
+              loadedCount + " of 8 planet textures loaded.";
           });
 
           image.addEventListener("error", function() {
             statusBox.textContent =
               "Could not load " + planetName +
-              ". Check its image filename.";
+              ". Check the image filename.";
           });
         }
       });
@@ -324,7 +744,6 @@
       updatePlanet(selectedPlanet);
     });
 
-    // Smooth continuous rotation.
     function rotatePlanet() {
       if (sphere && sphere.object3D) {
         sphere.object3D.rotation.y += 0.005;
@@ -339,6 +758,5 @@
 
     rotatePlanet();
   </script>
-
 </body>
 </html>
