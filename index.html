@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR Interactive Solar System</title>
+
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    #panel {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      z-index: 10;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(10, 18, 40, 0.92);
+      color: white;
+      max-height: 45vh;
+      overflow-y: auto;
+    }
+
+    #buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    #buttons button {
+      padding: 8px 10px;
+      border: 1px solid #789;
+      border-radius: 18px;
+      background: #243451;
+      color: white;
+      cursor: pointer;
+    }
+
+    #buttons button.active {
+      background: #f5b942;
+      color: #111;
+      border-color: #f5b942;
+    }
+
+    #planetName {
+      margin: 6px 0;
+      font-size: 20px;
+    }
+
+    #planetInfo {
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    #status {
+      margin-top: 7px;
+      font-size: 12px;
+      color: #aee7ff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="panel">
+    <div id="buttons">
+      <button data-planet="Mercury">Mercury</button>
+      <button data-planet="Venus">Venus</button>
+      <button data-planet="Earth" class="active">Earth</button>
+      <button data-planet="Mars">Mars</button>
+      <button data-planet="Jupiter">Jupiter</button>
+      <button data-planet="Saturn">Saturn</button>
+      <button data-planet="Uranus">Uranus</button>
+      <button data-planet="Neptune">Neptune</button>
+    </div>
+
+    <h2 id="planetName">Earth</h2>
+
+    <div id="planetInfo">
+      Distance from Sun: About 150 million km<br>
+      Our home planet, with liquid water on its surface.
+    </div>
+
+    <div id="status">Loading planet textures...</div>
+  </div>
+
+  <a-scene
+    mindar-image="imageTargetSrc: ./solar-system.mind; autoStart: true;"
+    color-space="sRGB"
+    renderer="colorManagement: true; physicallyCorrectLights: true;"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: true">
+
+    <a-assets timeout="30000">
+      <img id="mercuryTexture" src="./textures/mercury.jpg">
+      <img id="venusTexture" src="./textures/venus.jpg">
+      <img id="earthTexture" src="./textures/earth.jpg">
+      <img id="marsTexture" src="./textures/mars.jpg">
+      <img id="jupiterTexture" src="./textures/jupiter.jpg">
+      <img id="saturnTexture" src="./textures/saturn.jpg">
+      <img id="uranusTexture" src="./textures/uranus.jpg">
+      <img id="neptuneTexture" src="./textures/neptune.jpg">
+    </a-assets>
+
+    <!-- Camera -->
+    <a-camera
+      position="0 0 0"
+      look-controls="enabled: false">
+    </a-camera>
+
+    <!-- Improved lighting -->
+    <a-entity
+      light="type: ambient; color: #FFFFFF; intensity: 0.8">
+    </a-entity>
+
+    <a-entity
+      light="type: directional; color: #FFFFFF; intensity: 1.2"
+      position="-1 2 3">
+    </a-entity>
+
+    <!-- AR planet -->
+    <a-entity mindar-image-target="targetIndex: 0">
+
+      <a-sphere
+        id="planetSphere"
+        position="0 0 0"
+        radius="0.35"
+        material="src: #earthTexture; shader: standard; roughness: 1; metalness: 0">
+      </a-sphere>
+
+      <!-- Saturn's ring is hidden unless Saturn is selected -->
+      <a-ring
+        id="saturnRing"
+        position="0 0 0"
+        rotation="70 0 0"
+        radius-inner="0.52"
+        radius-outer="0.82"
+        material="color: #D8C49A; side: double; transparent: true; opacity: 0.9; roughness: 1"
+        visible="false">
+      </a-ring>
+
+      <a-entity
+        id="planetLabel"
+        position="0 -0.48 0"
+        text="value: Earth; align: center; color: #FFFFFF; width: 2.5; shader: msdf">
+      </a-entity>
+
+    </a-entity>
+  </a-scene>
+
+  <script>
+    const planets = {
+      Mercury: {
+        texture: "#mercuryTexture",
+        radius: 0.20,
+        distance: "About 57.9 million km",
+        fact: "The smallest planet and the closest to the Sun."
+      },
+
+      Venus: {
+        texture: "#venusTexture",
+        radius: 0.30,
+        distance: "About 108.2 million km",
+        fact: "Venus is the hottest planet in the Solar System."
+      },
+
+      Earth: {
+        texture: "#earthTexture",
+        radius: 0.35,
+        distance: "About 150 million km",
+        fact: "Our home planet, with liquid water on its surface."
+      },
+
+      Mars: {
+        texture: "#marsTexture",
+        radius: 0.27,
+        distance: "About 227.9 million km",
+        fact: "Mars is known as the Red Planet."
+      },
+
+      Jupiter: {
+        texture: "#jupiterTexture",
+        radius: 0.55,
+        distance: "About 778.6 million km",
+        fact: "The largest planet, famous for its Great Red Spot."
+      },
+
+      Saturn: {
+        texture: "#saturnTexture",
+        radius: 0.48,
+        distance: "About 1.43 billion km",
+        fact: "Saturn is famous for its extensive ring system."
+      },
+
+      Uranus: {
+        texture: "#uranusTexture",
+        radius: 0.39,
+        distance: "About 2.87 billion km",
+        fact: "An ice giant that rotates on a strongly tilted axis."
+      },
+
+      Neptune: {
+        texture: "#neptuneTexture",
+        radius: 0.38,
+        distance: "About 4.50 billion km",
+        fact: "A distant, cold planet with powerful winds."
+      }
+    };
+
+    const sphere = document.querySelector("#planetSphere");
+    const label = document.querySelector("#planetLabel");
+    const ring = document.querySelector("#saturnRing");
+    const nameBox = document.querySelector("#planetName");
+    const infoBox = document.querySelector("#planetInfo");
+    const statusBox = document.querySelector("#status");
+    const buttons = document.querySelectorAll("#buttons button");
+    const scene = document.querySelector("a-scene");
+
+    let selectedPlanet = "Earth";
+
+    function textureIsReady(textureSelector) {
+      const image = document.querySelector(textureSelector);
+
+      return image &&
+        image.complete &&
+        image.naturalWidth > 0;
+    }
+
+    function updatePlanet(planetName) {
+      const planet = planets[planetName];
+
+      if (!planet) return;
+
+      selectedPlanet = planetName;
+
+      buttons.forEach(function(button) {
+        button.classList.toggle(
+          "active",
+          button.dataset.planet === planetName
+        );
+      });
+
+      nameBox.textContent = planetName;
+
+      infoBox.innerHTML =
+        "Distance from Sun: " + planet.distance +
+        "<br>" + planet.fact;
+
+      label.setAttribute("text", "value", planetName);
+
+      sphere.setAttribute("radius", planet.radius);
+
+      // Show Saturn's rings only when Saturn is selected.
+      ring.setAttribute("visible", planetName === "Saturn");
+
+      if (textureIsReady(planet.texture)) {
+
+        // Rebuild the material to prevent the previous
+        // planet's texture from remaining on the sphere.
+        sphere.removeAttribute("material");
+
+        sphere.setAttribute("material", {
+          src: planet.texture,
+          shader: "standard",
+          roughness: 1,
+          metalness: 0
+        });
+
+        statusBox.textContent = planetName + " texture selected.";
+
+      } else {
+        statusBox.textContent =
+          "Waiting for " + planetName + " image to load...";
+      }
+    }
+
+    buttons.forEach(function(button) {
+      button.addEventListener("click", function() {
+        updatePlanet(button.dataset.planet);
+      });
+    });
+
+    scene.addEventListener("loaded", function() {
+      let loadedCount = 0;
+
+      Object.keys(planets).forEach(function(planetName) {
+        const selector = planets[planetName].texture;
+        const image = document.querySelector(selector);
+
+        if (image.complete && image.naturalWidth > 0) {
+          loadedCount++;
+        } else {
+          image.addEventListener("load", function() {
+            loadedCount++;
+
+            statusBox.textContent =
+              loadedCount + " of 8 planet textures loaded.";
+
+            if (selectedPlanet === planetName) {
+              updatePlanet(planetName);
+            }
+          });
+
+          image.addEventListener("error", function() {
+            statusBox.textContent =
+              "Could not load " + planetName +
+              ". Check its image filename.";
+          });
+        }
+      });
+
+      statusBox.textContent =
+        loadedCount + " of 8 planet textures loaded.";
+
+      updatePlanet(selectedPlanet);
+    });
+
+    // Smooth continuous rotation.
+    function rotatePlanet() {
+      if (sphere && sphere.object3D) {
+        sphere.object3D.rotation.y += 0.005;
+      }
+
+      if (ring && ring.object3D) {
+        ring.object3D.rotation.z += 0.001;
+      }
+
+      requestAnimationFrame(rotatePlanet);
+    }
+
+    rotatePlanet();
+  </script>
+
+</body>
+</html>
